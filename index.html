@@ -40,57 +40,49 @@
 
   <script>
     var lastImageNumber = 36;
-    var images = [];
+var images = [];
+var utterance = new SpeechSynthesisUtterance('');
 
-    // New code: speech functionality
-    var isSpeaking = false;
+function round(v) {
+  return (v >= 0 || -1) * Math.round(Math.abs(v));
+}
 
-    function speak(text) {
-      if (!isSpeaking) {
-        var msg = new SpeechSynthesisUtterance(text);
-        msg.onstart = function() {
-          isSpeaking = true;
-        }
-        msg.onend = function() {
-          isSpeaking = false;
-        }
-        window.speechSynthesis.speak(msg);
+function speak(text) {
+  if (utterance.text !== text) {
+    utterance.text = text;
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+function deviceOrientationListener(event) {
+  var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.fillStyle = "#00000";
+  ctx.font = "20px Verdana";
+  ctx.fillText("Alpha:" + Math.round(event.alpha), 10, 40);
+  ctx.fillText("Beta:" + Math.round(event.beta), 10, 80);
+  ctx.fillText("Gamma:" + Math.round(event.gamma), 10, 120);
+
+  if (Math.round(event.beta) < 93 && (event.beta) > 85) {
+    var text = "Orientation of Seating: Proper Seating Mode";
+    ctx.fillText(text, 10, 240);
+    speak(text);
+  }
+  if (Math.round(event.alpha) > 0) {
+    if (Math.round(event.beta) > 0) {
+      if (Math.round(event.gamma) > 0) {
+        var text = "User Started using Application";
+        ctx.fillText(text, 10, 200);
+        speak(text);
       }
     }
-    // End of new code
-
-    function round(v) {
-      return (v >= 0 || -1) * Math.round(Math.abs(v));
-    }
-
-    function deviceOrientationListener(event) {
-      var c = document.getElementById("myCanvas");
-      var ctx = c.getContext("2d");
-      ctx.clearRect(0, 0, c.width, c.height);
-      ctx.fillStyle = "#00000";
-      ctx.font = "20px Verdana";
-      ctx.fillText("Alpha:" + Math.round(event.alpha), 10, 40);
-      ctx.fillText("Beta:" + Math.round(event.beta), 10, 80);
-      ctx.fillText("Gamma:" + Math.round(event.gamma), 10, 120);
-
-      if (Math.round(event.beta) < 93 && (event.beta) > 85) {
-        ctx.fillText("Orientation of Seating:" + "Proper Seating Mode", 10, 240);
-        speak("Proper Seating Mode");
-      }
-      if (Math.round(event.alpha) > 0) {
-        if (Math.round(event.beta) > 0) {
-          if (Math.round(event.gamma) > 0) {
-            ctx.fillText("User Started using Application", 10, 200);
-            speak("User Started using Application");
-          }
-        }
-      }
-     if(Math.round(event.beta)<80){
-            
-                ctx.fillText("Orientation of Seating:" + "Not Proper Seating Mode",10,240);
-                speak("Not Proper Seating Mode");
-            
-        }
+  }
+  if (Math.round(event.beta) < 80) {
+    var text = "Orientation of Seating: Not Proper Seating Mode";
+    ctx.fillText(text, 10, 240);
+    speak(text);
+  }
     
         if(Math.round(event.gamma )<55 &&   Math.round(event.beta)<27   )
             {
