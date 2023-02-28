@@ -32,86 +32,63 @@
 <body>
   <h2>Project for Finding the Seating Orientation of a user without using External Sensors</h2>
 
-       <!--         <img src="http://www.jeep.com/assets/images/vehicles/2015/cherokee/vlp/mod-exterior-360/frame-1.jpg" width="512" height="512" id="cd" /> -->
-        <canvas id="myCanvas" width="800" height="400" style="border:1px solid #d3d3d3;"></canvas>
-<!--         Select Voice: <select id='voiceList'></select> <br><br> -->
+  <canvas id="myCanvas" width="800" height="400" style="border:1px solid #d3d3d3;"></canvas>
+
   <div class="chair">
-    <img src="http://www.jeep.com/assets/images/vehicles/2015/cherokee/vlp/mod-exterior-360/frame-1.jpg" alt="chair">
+    <img src="" alt="chair">
   </div>
-	<script>
-		
 
-        
+  <script>
+    var lastImageNumber = 36;
+    var images = [];
 
-            
-        
-var lastImageNumber = 36;
-var images = [];
-for (var i = 1; i < lastImageNumber+1; i += 1) {
-    images[i] = "http://www.jeep.com/assets/images/vehicles/2015/cherokee/vlp/mod-exterior-360/frame-" + i + ".jpg";
-}
+    // New code: speech functionality
+    var isSpeaking = false;
 
-window.addEventListener("DOMContentLoaded", function() {
-     for(var i in images) {
-        var img = new Image();
-          img.src = images[i];
-          img.style.display = "none";
-          img.addEventListener("load", function() {
-               this.parentNode.removeChild(this);
-          });
-          document.body.appendChild(img);
-     }
-});
-function showNotification(title, message) {
-      if (Notification.permission !== "granted") {
-        Notification.requestPermission();
-      } else {
-        var notification = new Notification(title, {
-          body: message
-        });
+    function speak(text) {
+      if (!isSpeaking) {
+        var msg = new SpeechSynthesisUtterance(text);
+        msg.onstart = function() {
+          isSpeaking = true;
+        }
+        msg.onend = function() {
+          isSpeaking = false;
+        }
+        window.speechSynthesis.speak(msg);
       }
     }
-function round(v) {
-    return (v >= 0 || -1) * Math.round(Math.abs(v));
-}
+    // End of new code
 
-
-
-function deviceOrientationListener(event) {
-     var c=document.getElementById("myCanvas");
-     var ctx=c.getContext("2d");
-     ctx.clearRect(0,0, c.width, c.height);
-     ctx.fillStyle="#00000";
-     ctx.font="20px Verdana";
-     ctx.fillText("Alpha:" + Math.round(event.alpha) ,10,40);
-     ctx.fillText("Beta:" + Math.round(event.beta),10,80);
-     ctx.fillText("Gamma:" + Math.round(event.gamma),10,120);
-    
-    if(Math.round(event.beta)<93 && (event.beta)>85    )
-    {
-        
-                    ctx.fillText("Orientation of Seating:" + "Proper Seating Mode",10,240);
-	    showNotification("Seating Orientation", "Proper Seating Mode");
-                        
-               
+    function round(v) {
+      return (v >= 0 || -1) * Math.round(Math.abs(v));
     }
-    if(Math.round(event.alpha)>0)
-    {
-        if(Math.round(event.beta)>0){
-            if(Math.round(event.gamma)>0){
-                ctx.fillText("User Started using Application",10,200); 
-                
 
-                    
-                
-            }
+    function deviceOrientationListener(event) {
+      var c = document.getElementById("myCanvas");
+      var ctx = c.getContext("2d");
+      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.fillStyle = "#00000";
+      ctx.font = "20px Verdana";
+      ctx.fillText("Alpha:" + Math.round(event.alpha), 10, 40);
+      ctx.fillText("Beta:" + Math.round(event.beta), 10, 80);
+      ctx.fillText("Gamma:" + Math.round(event.gamma), 10, 120);
+
+      if (Math.round(event.beta) < 93 && (event.beta) > 85) {
+        ctx.fillText("Orientation of Seating:" + "Proper Seating Mode", 10, 240);
+        speak("Proper Seating Mode");
+      }
+      if (Math.round(event.alpha) > 0) {
+        if (Math.round(event.beta) > 0) {
+          if (Math.round(event.gamma) > 0) {
+            ctx.fillText("User Started using Application", 10, 200);
+            speak("User Started using Application");
+          }
         }
-    }
-    
-        if(Math.round(event.beta)<80){
+      }
+     if(Math.round(event.beta)<80){
             
                 ctx.fillText("Orientation of Seating:" + "Not Proper Seating Mode",10,240);
-                    
+                speak("Not Proper Seating Mode");
             
         }
     
