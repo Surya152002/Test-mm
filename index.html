@@ -55,6 +55,8 @@ function speak(text) {
 }
 
 function deviceOrientationListener(event) {
+  // initialize timer
+  var timer = 0;
   var c = document.getElementById("myCanvas");
   var ctx = c.getContext("2d");
   ctx.clearRect(0, 0, c.width, c.height);
@@ -64,11 +66,24 @@ function deviceOrientationListener(event) {
   ctx.fillText("Beta:" + Math.round(event.beta), 10, 80);
   ctx.fillText("Gamma:" + Math.round(event.gamma), 10, 120);
 
+  // check if beta is less than 80
   if (Math.round(event.beta) < 93 && (event.beta) > 85) {
     var text = "Orientation of Seating: Proper Seating Mode";
     ctx.fillText(text, 10, 240);
     speak(text);
+  } else if (Math.round(event.beta) < 80) {
+    // increment timer if beta is less than 80
+    timer++;
+    if (timer == 120) { // 120 * 1000 ms = 2 mins
+      var text = "Orientation of Seating: Not Proper Seating Mode. Please sit properly.";
+      ctx.fillText(text, 10, 240);
+      speak(text);
+    }
+  } else {
+    // reset timer if beta is greater than or equal to 80
+    timer = 0;
   }
+
   if (Math.round(event.alpha) > 0) {
     if (Math.round(event.beta) > 0) {
       if (Math.round(event.gamma) > 0) {
@@ -78,45 +93,31 @@ function deviceOrientationListener(event) {
       }
     }
   }
-  if (Math.round(event.beta) < 80) {
-    var text = "Orientation of Seating: Not Proper Seating Mode";
-    ctx.fillText(text, 10, 240);
-    speak(text);
-  }
-    
-        if(Math.round(event.gamma )<55 &&   Math.round(event.beta)<27   )
-            {
-                
-                    
-                        
-                            ctx.fillText("Thanks for using Smart Chair",10,280);
-                                
-                        
-                    
-                
-            }
-        else{
-               if(Math.round(event.alpha)==0)
-                    {
-                        if(Math.round(event.beta)==0){
-                            if(Math.round(event.gamma)==0){
-                                ctx.fillText("Thanks for using Smart Chair",10,280);
-                                    
-                            }
-                        }
-                    } 
+
+  if (Math.round(event.gamma) < 55 && Math.round(event.beta) < 27) {
+    ctx.fillText("Thanks for using Smart Chair", 10, 280);
+  } else {
+    if (Math.round(event.alpha) == 0) {
+      if (Math.round(event.beta) == 0) {
+        if (Math.round(event.gamma) == 0) {
+          ctx.fillText("Thanks for using Smart Chair", 10, 280);
         }
+      }
+    }
+  }
 
-     var img = document.getElementById('cd');
-     var GammaVal = round(event.gamma);
-     var ForceInRange = Math.floor(GammaVal);
-     if (GammaVal <= 36) {   img.src = images[36]; } // Constrain first image
-      else if (GammaVal >= 1)  {  img.src = images[lastImageNumber]; } //Constrain last image
-        else img.src = images[ForceInRange];
-ctx.fillText("Using Image:" + img.src ,10,160);
+  var img = document.getElementById('cd');
+  var GammaVal = round(event.gamma);
+  var ForceInRange = Math.floor(GammaVal);
+  if (GammaVal <= 36) {
+    img.src = images[36];
+  } // Constrain first image
+  else if (GammaVal >= 1) {
+    img.src = images[lastImageNumber];
+  } //Constrain last image
+  else img.src = images[ForceInRange];
+  ctx.fillText("Using Image:" + img.src, 10, 160);
 }
-
-
 // Orientation Check
 var supportsOrientation = "No";
 if (window.DeviceOrientationEvent) {
