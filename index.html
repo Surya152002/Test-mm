@@ -1,78 +1,150 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>tracker</title>
-	<link rel="stylesheet" href="css/layout.css" type="text/css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>tracker</title>
+  <link rel="stylesheet" href="css/layout.css" type="text/css">
+  <style>
+    .chair {
+      width: 200px;
+      height: 200px;
+      background-color: #ccc;
+      position: relative;
+      margin: 0 auto;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease-out;
+    }
+
+    .chair img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
 </head>
 <body>
-	<h2>Project for Finding the Seating Orientation of a user without using External Sensors</h2>
+  <h2>Project for Finding the Seating Orientation of a user without using External Sensors</h2>
 
-	<div id="images">
-		<img src="http://www.jeep.com/assets/images/vehicles/2015/cherokee/vlp/mod-exterior-360/frame-1.jpg" id="cd">
-	</div>
-
-	<div id="text">
-		<p id="alpha">Alpha:</p>
-		<p id="beta">Beta:</p>
-		<p id="gamma">Gamma:</p>
-		<p id="seating">Orientation of Seating:</p>
-		<p id="status">User Started using Application</p>
-		<p id="message">Thanks for using Smart Chair</p>
-		<p id="image">Using Image:</p>
-	</div>
-
+       <!--         <img src="http://www.jeep.com/assets/images/vehicles/2015/cherokee/vlp/mod-exterior-360/frame-1.jpg" width="512" height="512" id="cd" /> -->
+        <canvas id="myCanvas" width="800" height="400" style="border:1px solid #d3d3d3;"></canvas>
+<!--         Select Voice: <select id='voiceList'></select> <br><br> -->
+  <div class="chair">
+    <img src="http://www.jeep.com/assets/images/vehicles/2015/cherokee/vlp/mod-exterior-360/frame-1.jpg" alt="chair">
+  </div>
 	<script>
-		var lastImageNumber = 36;
-		var images = [];
-		for (var i = 1; i < lastImageNumber+1; i += 1) {
-			images[i] = "http://www.jeep.com/assets/images/vehicles/2015/cherokee/vlp/mod-exterior-360/frame-" + i + ".jpg";
-		}
+		
 
-		window.addEventListener("DOMContentLoaded", function() {
-			for(var i in images) {
-				var img = new Image();
-				img.src = images[i];
-				img.style.display = "none";
-				img.addEventListener("load", function() {
-					this.parentNode.removeChild(this);
-				});
-				document.getElementById('images').appendChild(img);
-			}
-		});
+        
 
-		function round(v) {
-			return (v >= 0 || -1) * Math.round(Math.abs(v));
-		}
+            
+        
+var lastImageNumber = 36;
+var images = [];
+for (var i = 1; i < lastImageNumber+1; i += 1) {
+    images[i] = "http://www.jeep.com/assets/images/vehicles/2015/cherokee/vlp/mod-exterior-360/frame-" + i + ".jpg";
+}
 
-		function updateText(event) {
-			document.getElementById('alpha').textContent = "Alpha:" + Math.round(event.alpha);
-			document.getElementById('beta').textContent = "Beta:" + Math.round(event.beta);
-			document.getElementById('gamma').textContent = "Gamma:" + Math.round(event.gamma);
-			var seatingText = "";
-			if (Math.round(event.beta)<93 && (event.beta)>85) {
-				seatingText = "Proper Seating Mode";
-			} else if (Math.round(event.beta)<80) {
-				seatingText = "Not Proper Seating Mode";
-			}
-			document.getElementById('seating').textContent = "Orientation of Seating:" + seatingText;
-			if (Math.round(event.alpha)>0 && Math.round(event.beta)>0 && Math.round(event.gamma)>0) {
-				document.getElementById('status').textContent = "User Started using Application";
-			}
-			var messageText = "";
-			if (Math.round(event.gamma)<55 && Math.round(event.beta)<27) {
-				messageText = "Thanks for using Smart Chair";
-			} else if (Math.round(event.alpha)==0 && Math.round(event.beta)==0 && Math.round(event.gamma)==0) {
-				messageText = "Thanks for using Smart Chair";
-			}
-			document.getElementById('message').textContent = messageText;
-			document.getElementById('image').textContent = "Using Image: " + document.getElementById('cd').src;
-		}
+window.addEventListener("DOMContentLoaded", function() {
+     for(var i in images) {
+        var img = new Image();
+          img.src = images[i];
+          img.style.display = "none";
+          img.addEventListener("load", function() {
+               this.parentNode.removeChild(this);
+          });
+          document.body.appendChild(img);
+     }
+});
+function round(v) {
+    return (v >= 0 || -1) * Math.round(Math.abs(v));
+}
 
-		// Orientation Check
-		var supportsOrientation = "No";
+
+
+function deviceOrientationListener(event) {
+     var c=document.getElementById("myCanvas");
+     var ctx=c.getContext("2d");
+     ctx.clearRect(0,0, c.width, c.height);
+     ctx.fillStyle="#00000";
+     ctx.font="20px Verdana";
+     ctx.fillText("Alpha:" + Math.round(event.alpha) ,10,40);
+     ctx.fillText("Beta:" + Math.round(event.beta),10,80);
+     ctx.fillText("Gamma:" + Math.round(event.gamma),10,120);
+    
+    if(Math.round(event.beta)<93 && (event.beta)>85    )
+    {
+        
+                    ctx.fillText("Orientation of Seating:" + "Proper Seating Mode",10,240);
+                        
+               
+    }
+    if(Math.round(event.alpha)>0)
+    {
+        if(Math.round(event.beta)>0){
+            if(Math.round(event.gamma)>0){
+                ctx.fillText("User Started using Application",10,200); 
+                
+
+                    
+                
+            }
+        }
+    }
+    
+        if(Math.round(event.beta)<80){
+            
+                ctx.fillText("Orientation of Seating:" + "Not Proper Seating Mode",10,240);
+                    
+            
+        }
+    
+        if(Math.round(event.gamma )<55 &&   Math.round(event.beta)<27   )
+            {
+                
+                    
+                        
+                            ctx.fillText("Thanks for using Smart Chair",10,280);
+                                
+                        
+                    
+                
+            }
+        else{
+               if(Math.round(event.alpha)==0)
+                    {
+                        if(Math.round(event.beta)==0){
+                            if(Math.round(event.gamma)==0){
+                                ctx.fillText("Thanks for using Smart Chair",10,280);
+                                    
+                            }
+                        }
+                    } 
+        }
+
+     var img = document.getElementById('cd');
+     var GammaVal = round(event.gamma);
+     var ForceInRange = Math.floor(GammaVal);
+     if (GammaVal <= 36) {   img.src = images[36]; } // Constrain first image
+      else if (GammaVal >= 1)  {  img.src = images[lastImageNumber]; } //Constrain last image
+        else img.src = images[ForceInRange];
+ctx.fillText("Using Image:" + img.src ,10,160);
+}
+
+
+// Orientation Check
+var supportsOrientation = "No";
+if (window.DeviceOrientationEvent) {
+   window.addEventListener("deviceorientation", deviceOrientationListener);
+   var supportsOrientation = "Yes";
+   } else {   document.getElementById("dmEvent").innerHTML = "deviceorientation Not Supported!"}
+//END Check to see if browser supports motion
 </script>
     </body>
 </html>
